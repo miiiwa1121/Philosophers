@@ -6,7 +6,7 @@
 /*   By: mtsubasa <mtsubasa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 05:15:51 by mtsubasa          #+#    #+#             */
-/*   Updated: 2025/07/31 05:29:50 by mtsubasa         ###   ########.fr       */
+/*   Updated: 2025/07/31 15:11:59 by mtsubasa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ int	init_table(t_table *table, int ac, char **av)
 		table->must_eat_count = -1;
 	if (table->num_philosophers <= 0)
 		return (1);
-	table->philosophers = malloc(sizeof(t_philosopher) * table->num_philosophers);
+	table->philosophers = malloc(sizeof(t_philosopher)
+			* table->num_philosophers);
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->num_philosophers);
 	if (!table->philosophers || !table->forks)
 		return (1);
