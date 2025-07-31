@@ -6,11 +6,11 @@
 /*   By: mtsubasa <mtsubasa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 05:15:56 by mtsubasa          #+#    #+#             */
-/*   Updated: 2025/07/31 05:21:13 by mtsubasa         ###   ########.fr       */
+/*   Updated: 2025/07/31 05:24:13 by mtsubasa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../include/philo.h"
 
 static int	is_numeric(char *str)
 {

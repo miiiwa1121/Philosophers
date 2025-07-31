@@ -6,11 +6,11 @@
 /*   By: mtsubasa <mtsubasa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 05:16:13 by mtsubasa          #+#    #+#             */
-/*   Updated: 2025/07/31 05:22:28 by mtsubasa         ###   ########.fr       */
+/*   Updated: 2025/07/31 05:24:22 by mtsubasa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../include/philo.h"
 
 long	ft_atoi(const char *str)
 {

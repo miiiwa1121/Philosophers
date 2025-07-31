@@ -6,11 +6,63 @@
 /*   By: mtsubasa <mtsubasa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 05:16:08 by mtsubasa          #+#    #+#             */
-/*   Updated: 2025/07/31 05:21:40 by mtsubasa         ###   ########.fr       */
+/*   Updated: 2025/07/31 13:47:27 by mtsubasa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../include/philo.h"
+
+/*
+** =============================================================================
+** Helper Functions for Monitor
+** =============================================================================
+*/
+
+static int	check_death(t_philosopher *philo)
+{
+	pthread_mutex_lock(&philo->table->meal_lock);
+	if (get_current_time() - philo->last_meal_time > philo->table->time_to_die)
+	{
+		print_status(philo, "died");
+		pthread_mutex_unlock(&philo->table->meal_lock);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->table->meal_lock);
+	return (0);
+}
+
+static int	check_all_eaten(t_table *table)
+{
+	int	i;
+	int	all_eaten;
+
+	if (table->must_eat_count == -1)
+		return (0);
+	all_eaten = 1;
+	i = 0;
+	while (i < table->num_philosophers)
+	{
+		pthread_mutex_lock(&table->meal_lock);
+		if (table->philosophers[i].eat_count < table->must_eat_count)
+			all_eaten = 0;
+		pthread_mutex_unlock(&table->meal_lock);
+		i++;
+	}
+	if (all_eaten)
+	{
+		pthread_mutex_lock(&table->print_lock);
+		table->simulation_should_end = 1;
+		pthread_mutex_unlock(&table->print_lock);
+		return (1);
+	}
+	return (0);
+}
+
+/*
+** =============================================================================
+** Philosopher's Actions & Main Routine
+** =============================================================================
+*/
 
 void	eat_action(t_philosopher *philo)
 {
@@ -71,56 +123,35 @@ void	*philosopher_routine(void *arg)
 	return (NULL);
 }
 
+/*
+** =============================================================================
+** Simulation Control
+** =============================================================================
+*/
+
 void	monitor_philosophers(t_table *table)
 {
 	int	i;
-	int	all_philos_have_eaten_enough;
 
 	while (1)
 	{
 		i = 0;
-		all_philos_have_eaten_enough = 1;
 		while (i < table->num_philosophers)
 		{
-			pthread_mutex_lock(&table->meal_lock);
-			if (get_current_time() - table->philosophers[i].last_meal_time
-				> table->time_to_die)
-				print_status(&table->philosophers[i], "died");
-			if (table->must_eat_count != -1
-				&& table->philosophers[i].eat_count < table->must_eat_count)
-				all_philos_have_eaten_enough = 0;
-			pthread_mutex_unlock(&table->meal_lock);
+			if (check_death(&table->philosophers[i]))
+				return ;
 			i++;
 		}
-		if (table->must_eat_count != -1 && all_philos_have_eaten_enough)
-		{
-			pthread_mutex_lock(&table->print_lock);
-			table->simulation_should_end = 1;
-			pthread_mutex_unlock(&table->print_lock);
-		}
-		pthread_mutex_lock(&table->print_lock);
-		if (table->simulation_should_end)
-		{
-			pthread_mutex_unlock(&table->print_lock);
-			break ;
-		}
-		pthread_mutex_unlock(&table->print_lock);
+		if (check_all_eaten(table))
+			return ;
 		usleep(1000);
 	}
 }
 
-int	start_simulation(t_table *table)
+static int	create_and_join_threads(t_table *table)
 {
 	int	i;
 
-	if (table->num_philosophers == 1)
-	{
-		table->start_time = get_current_time();
-		print_status(&table->philosophers[0], "has taken a fork");
-		usleep(table->time_to_die * 1000);
-		print_status(&table->philosophers[0], "died");
-		return (0);
-	}
 	i = 0;
 	while (i < table->num_philosophers)
 	{
@@ -138,4 +169,17 @@ int	start_simulation(t_table *table)
 		i++;
 	}
 	return (0);
+}
+
+int	start_simulation(t_table *table)
+{
+	if (table->num_philosophers == 1)
+	{
+		table->start_time = get_current_time();
+		print_status(&table->philosophers[0], "has taken a fork");
+		usleep(table->time_to_die * 1000);
+		print_status(&table->philosophers[0], "died");
+		return (0);
+	}
+	return (create_and_join_threads(table));
 }
