@@ -6,7 +6,7 @@
 /*   By: mtsubasa <mtsubasa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 05:15:44 by mtsubasa          #+#    #+#             */
-/*   Updated: 2025/07/31 13:41:02 by mtsubasa         ###   ########.fr       */
+/*   Updated: 2025/07/31 14:56:02 by mtsubasa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,13 @@ void	cleanup(t_table *table);
 
 /* simulation.c */
 int		start_simulation(t_table *table);
+
+/* actions.c */
 void	*philosopher_routine(void *arg);
-void	monitor_philosophers(t_table *table);
 void	eat_action(t_philosopher *philo);
+
+/* monitor.c */
+void	monitor_philosophers(t_table *table);
 
 /* utils.c */
 long	ft_atoi(const char *str);
